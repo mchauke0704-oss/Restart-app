@@ -1,0 +1,395 @@
+HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101713">
+<title>RESTART</title>
+<style>
+:root {
+  --bg:#101713; --panel:#1b2520; --panel2:#243129;
+  --text:#f2f5f2; --muted:#a5b2a9; --accent:#b8d8a5;
+  --border:#344239; --danger:#e9a5a5;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+header {padding:25px 20px 15px}
+header h1 {margin:0;font-size:28px;letter-spacing:3px}
+header p {color:var(--muted);margin:7px 0}
+main {padding:10px 16px 100px;max-width:700px;margin:auto}
+nav {
+  position:fixed;bottom:0;left:0;right:0;z-index:5;
+  display:flex;overflow-x:auto;background:#18211c;
+  border-top:1px solid var(--border);padding:9px 5px;
+}
+nav button {
+  flex:1;min-width:65px;background:none;border:0;
+  color:var(--muted);font-size:11px;padding:8px 3px;
+}
+nav button.active {color:var(--accent)}
+nav span {display:block;font-size:19px;margin-bottom:4px}
+.page {display:none}
+.page.active {display:block}
+.card {
+  background:var(--panel);border:1px solid var(--border);
+  padding:17px;border-radius:17px;margin:12px 0;
+}
+h2 {font-size:21px;margin:8px 0 14px}
+h3 {font-size:16px;margin:0 0 10px}
+p {line-height:1.5}
+.muted {color:var(--muted);font-size:13px}
+input,textarea,select {
+  display:block;width:100%;margin:8px 0 12px;padding:12px;
+  border-radius:10px;border:1px solid var(--border);
+  background:var(--panel2);color:var(--text);font-size:15px;
+}
+textarea {min-height:90px;resize:vertical}
+button.action {
+  background:var(--accent);color:#142017;border:0;
+  border-radius:10px;padding:12px 16px;font-weight:700;
+}
+button.secondary {
+  background:var(--panel2);color:var(--text);
+  border:1px solid var(--border);border-radius:9px;padding:9px 12px;
+}
+.item {
+  padding:12px 0;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.item:last-child {border-bottom:0}
+.item small {display:block;color:var(--muted);margin-top:4px}
+.tag {color:var(--accent);font-size:12px}
+.grid {display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat {background:var(--panel2);padding:13px;border-radius:12px}
+.stat strong {font-size:23px;display:block}
+label {font-size:13px;color:var(--muted)}
+hr {border:0;border-top:1px solid var(--border);margin:16px 0}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>RESTART</h1>
+  <p id="today"></p>
+  <p class="muted">Understand yourself. Take responsibility. Begin again.</p>
+</header>
+
+<main>
+<section id="home" class="page active">
+  <h2>Welcome back.</h2>
+  <p class="muted">Your life is bigger than your productivity. Let's see where you stand.</p>
+  <div class="grid">
+    <div class="stat"><strong id="taskCount">0</strong><small>Open tasks</small></div>
+    <div class="stat"><strong id="habitCount">0</strong><small>Active habits</small></div>
+  </div>
+  <div class="card">
+    <h3>Today's priorities</h3>
+    <div id="homeTasks" class="muted">No tasks recorded yet.</div>
+  </div>
+  <div class="card">
+    <h3>Latest sleep record</h3>
+    <div id="latestSleep" class="muted">Not recorded.</div>
+  </div>
+  <div class="card">
+    <h3>A thought to carry today</h3>
+    <p>You don't need to fix your entire life today. Start with the next honest step.</p>
+  </div>
+</section>
+
+<section id="plan" class="page">
+  <h2>Plan</h2>
+  <p class="muted">Make a plan that fits your actual day.</p>
+  <div class="card">
+    <h3>Add a task</h3>
+    <form id="taskForm">
+      <label>What needs to be done?</label>
+      <input id="taskName" required placeholder="e.g. Work on my website">
+      <label>Date</label>
+      <input id="taskDate" type="date" required>
+      <label>Priority</label>
+      <select id="taskPriority">
+        <option>Normal</option><option>Low</option>
+        <option>High</option><option>Urgent</option>
+      </select>
+      <label>When?</label>
+      <select id="taskTime">
+        <option>Anytime</option><option>Early morning</option>
+        <option>Late morning</option><option>Afternoon</option>
+        <option>Evening</option>
+      </select>
+      <button class="action">Save task</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Your tasks</h3>
+    <div id="tasksList"></div>
+  </div>
+</section>
+
+<section id="grow" class="page">
+  <h2>Grow</h2>
+  <p class="muted">Development is a process, not a competition.</p>
+  <div class="card">
+    <h3>Add a habit</h3>
+    <form id="habitForm">
+      <input id="habitName" required placeholder="Name your habit">
+      <select id="habitType">
+        <option value="Strengthen">Strengthen — build a habit</option>
+        <option value="Weaken">Weaken — reduce a habit</option>
+      </select>
+      <button class="action">Add habit</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Your habits</h3>
+    <div id="habitsList"></div>
+  </div>
+</section>
+
+<section id="sleep" class="page">
+  <h2>Sleep & Recovery</h2>
+  <p class="muted">Record what actually happened, not what you wish happened.</p>
+  <div class="card">
+    <h3>Sleep record</h3>
+    <form id="sleepForm">
+      <label>When did you go to bed?</label>
+      <input id="bedtime" type="datetime-local" required>
+      <label>When do you estimate you fell asleep?</label>
+      <input id="sleepOnset" type="datetime-local" required>
+      <label>When did you wake up?</label>
+      <input id="wakeTime" type="datetime-local" required>
+      <label>Nap duration in minutes (if any)</label>
+      <input id="nap" type="number" min="0" value="0">
+      <label>How was your sleep?</label>
+      <select id="sleepQuality">
+        <option>Not rated</option><option>Poor</option>
+        <option>Okay</option><option>Good</option><option>Excellent</option>
+      </select>
+      <label>How rested did you feel?</label>
+      <select id="rested">
+        <option>Not rated</option><option>Not rested</option>
+        <option>Somewhat rested</option><option>Rested</option>
+      </select>
+      <button class="action">Save sleep record</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Sleep history</h3>
+    <div id="sleepList"></div>
+  </div>
+</section>
+
+<section id="spirit" class="page">
+  <h2>Spirit</h2>
+  <p class="muted">Make room for your relationship with God.</p>
+  <div class="card">
+    <h3>Scripture reflection</h3>
+    <form id="spiritForm">
+      <label>Bible passage</label>
+      <input id="passage" placeholder="e.g. Matthew 6:25–34">
+      <label>What stood out to you?</label>
+      <textarea id="spiritNote" placeholder="Write your reflection..."></textarea>
+      <button class="action">Save reflection</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Your reflections</h3>
+    <div id="spiritList"></div>
+  </div>
+</section>
+
+<section id="boundaries" class="page">
+  <h2>Digital Boundaries</h2>
+  <div class="card">
+    <h3>Protection of your attention</h3>
+    <p>Native app restrictions are not active in this browser version.</p>
+    <p class="muted">We will implement real iPhone and Android integrations separately. This page will not pretend to block apps.</p>
+  </div>
+</section>
+
+<section id="sos" class="page">
+  <h2>SOS</h2>
+  <div class="card">
+    <h3>Your accountability companion</h3>
+    <p>SOS will help you follow through on important activities and recover when you get stuck.</p>
+    <p class="muted">Background alerts and reliable system-level restrictions require native integrations. They are not active in this first version.</p>
+  </div>
+</section>
+
+<section id="more" class="page">
+  <h2>More of RESTART</h2>
+  <div class="card">
+    <h3>Consistency</h3>
+    <p>Understand patterns across different areas of your life. No score will be invented when records are missing.</p>
+  </div>
+  <div class="card">
+    <h3>Private Space</h3>
+    <p>Private Space will require proper authentication and data protection before sensitive records are stored there.</p>
+  </div>
+  <div class="card">
+    <h3>Panic Room</h3>
+    <p>The Panic Button is planned for iPhone Control Centre and Android Quick Settings, not as a floating button inside the app.</p>
+  </div>
+</section>
+</main>
+
+<nav>
+  <button class="active" data-page="home"><span>⌂</span>Home</button>
+  <button data-page="plan"><span>☷</span>Plan</button>
+  <button data-page="grow"><span>↗</span>Grow</button>
+  <button data-page="sleep"><span>☾</span>Sleep</button>
+  <button data-page="spirit"><span>✧</span>Spirit</button>
+  <button data-page="boundaries"><span>◈</span>Limits</button>
+  <button data-page="sos"><span>◎</span>SOS</button>
+  <button data-page="more"><span>•••</span>More</button>
+</nav>
+
+<script>
+const $ = id => document.getElementById(id);
+const load = key => {
+  try { return JSON.parse(localStorage.getItem("restart_"+key)) || []; }
+  catch { return []; }
+};
+const save = (key,data) =>
+  localStorage.setItem("restart_"+key,JSON.stringify(data));
+
+let tasks=load("tasks"), habits=load("habits"),
+    sleeps=load("sleeps"), spirit=load("spirit");
+
+$("today").textContent = new Date().toLocaleDateString(undefined,{
+  weekday:"long",year:"numeric",month:"long",day:"numeric"
+});
+$("taskDate").value = new Date().toISOString().slice(0,10);
+
+document.querySelectorAll("nav button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    $(btn.dataset.page).classList.add("active");
+    render();
+  });
+});
+
+$("taskForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  tasks.push({
+    id:crypto.randomUUID(),name:$("taskName").value.trim(),
+    date:$("taskDate").value,priority:$("taskPriority").value,
+    time:$("taskTime").value,done:false
+  });
+  save("tasks",tasks);e.target.reset();
+  $("taskDate").value=new Date().toISOString().slice(0,10);
+  render();
+});
+
+$("habitForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  habits.push({
+    id:crypto.randomUUID(),name:$("habitName").value.trim(),
+    type:$("habitType").value,checks:[]
+  });
+  save("habits",habits);e.target.reset();render();
+});
+
+$("sleepForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const bed=new Date($("bedtime").value);
+  const onset=new Date($("sleepOnset").value);
+  const wake=new Date($("wakeTime").value);
+  if(wake<=onset || onset<bed){
+    alert("Check your bedtime, sleep onset and wake-up times.");
+    return;
+  }
+  const minutes=Math.round((wake-onset)/60000);
+  sleeps.unshift({
+    id:crypto.randomUUID(),bed:$("bedtime").value,
+    onset:$("sleepOnset").value,wake:$("wakeTime").value,
+    minutes,nap:Number($("nap").value)||0,
+    quality:$("sleepQuality").value,rested:$("rested").value
+  });
+  save("sleeps",sleeps);e.target.reset();render();
+});
+
+$("spiritForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  spirit.unshift({
+    id:crypto.randomUUID(),passage:$("passage").value.trim(),
+    note:$("spiritNote").value.trim(),date:new Date().toISOString()
+  });
+  save("spirit",spirit);e.target.reset();render();
+});
+
+function removeItem(key,id){
+  if(!confirm("Delete this record? This cannot be undone."))return;
+  if(key==="tasks")tasks=tasks.filter(x=>x.id!==id);
+  if(key==="habits")habits=habits.filter(x=>x.id!==id);
+  if(key==="sleeps")sleeps=sleeps.filter(x=>x.id!==id);
+  if(key==="spirit")spirit=spirit.filter(x=>x.id!==id);
+  save(key,{tasks,habits,sleeps,spirit}[key]);render();
+}
+function toggleTask(id){
+  const t=tasks.find(x=>x.id===id);
+  if(t)t.done=!t.done;
+  save("tasks",tasks);render();
+}
+function checkHabit(id){
+  const h=habits.find(x=>x.id===id);
+  const today=new Date().toISOString().slice(0,10);
+  if(h && !h.checks.includes(today))h.checks.push(today);
+  save("habits",habits);render();
+}
+function duration(min){
+  return Math.floor(min/60)+"h "+(min%60)+"m";
+}
+function render(){
+  $("taskCount").textContent=tasks.filter(t=>!t.done).length;
+  $("habitCount").textContent=habits.length;
+  const today=new Date().toISOString().slice(0,10);
+  const todays=tasks.filter(t=>t.date===today);
+  $("homeTasks").innerHTML=todays.length
+    ?todays.map(t=>`<div class="item">${escapeHTML(t.name)}
+      <span class="tag">${t.done?"Done":escapeHTML(t.priority)}</span></div>`).join("")
+    :"No tasks recorded for today.";
+  $("tasksList").innerHTML=tasks.length?tasks.map(t=>`
+    <div class="item"><div>
+      <strong>${escapeHTML(t.name)}</strong>
+      <small>${escapeHTML(t.date)} · ${escapeHTML(t.time)} · ${escapeHTML(t.priority)}</small>
+      <small>${t.done?"Completed":"Open"}</small>
+    </div><div>
+      <button class="secondary" onclick="toggleTask('${t.id}')">${t.done?"Undo":"Done"}</button>
+      <button class="secondary" onclick="removeItem('tasks','${t.id}')">×</button>
+    </div></div>`).join(""):"No tasks yet.";
+  $("habitsList").innerHTML=habits.length?habits.map(h=>`
+    <div class="item"><div><strong>${escapeHTML(h.name)}</strong>
+      <small>${escapeHTML(h.type)} · ${h.checks.length} check-ins</small>
+    </div><div>
+      <button class="secondary" onclick="checkHabit('${h.id}')">Check in</button>
+      <button class="secondary" onclick="removeItem('habits','${h.id}')">×</button>
+    </div></div>`).join(""):"No habits yet.";
+  $("sleepList").innerHTML=sleeps.length?sleeps.map(s=>`
+    <div class="item"><div><strong>${escapeHTML(s.wake.replace("T"," "))}</strong>
+    <small>Sleep: ${duration(s.minutes)} · Nap: ${s.nap} min</small>
+    <small>${escapeHTML(s.quality)} · ${escapeHTML(s.rested)}</small></div>
+    <button class="secondary" onclick="removeItem('sleeps','${s.id}')">×</button></div>`).join(""):"No sleep records yet.";
+  $("latestSleep").textContent=sleeps.length
+    ?duration(sleeps[0].minutes)+" recorded sleep"
+    :"Not recorded.";
+  $("spiritList").innerHTML=spirit.length?spirit.map(s=>`
+    <div class="item"><div><strong>${escapeHTML(s.passage||"Personal reflection")}</strong>
+    <small>${escapeHTML(s.note)}</small></div>
+    <button class="secondary" onclick="removeItem('spirit','${s.id}')">×</button></div>`).join(""):"No reflections yet.";
+}
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+render();
+</script>
+</body>
+</html>
